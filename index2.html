@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Acquisition Tracking Worksheet</title>
+  <style>
+    :root {
+      --main-bg: #f7f9fa;
+      --card-bg: #fff;
+      --accent: #1976d2;
+      --border: #e0e0e0;
+      --radius: 12px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.07);
+      --row-hover: #e3f2fd;
+      --bottom-space: 100px;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--main-bg);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 36px 32px 36px;
+      min-height: 700px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 32px;
+      font-size: 2.3rem;
+      letter-spacing: 2px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      justify-content: flex-end;
+    }
+    .toolbar button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 500;
+    }
+    .toolbar button:hover {
+      background: #0d47a1;
+    }
+    .sector-table {
+      margin-bottom: 44px;
+      border-radius: var(--radius);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      background: #fafcff;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .sector-header {
+      background: var(--accent);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 14px 18px;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #1565c0;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 1rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 10px;
+      text-align: left;
+      min-width: 110px;
+      background: #fff;
+      vertical-align: middle;
+      resize: vertical;
+      overflow: auto;
+      max-width: 350px;
+      transition: background 0.2s;
+    }
+    th {
+      background: #f1f8fe;
+      font-weight: 600;
+      color: #1976d2;
+      font-size: 1.02rem;
+      cursor: pointer;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-bottom: 2px solid #90caf9;
+    }
+    tr:hover td {
+      background: var(--row-hover);
+    }
+    td input, td textarea, td select {
+      width: 98%;
+      font-size: 1rem;
+      border: none;
+      background: transparent;
+      outline: none;
+      resize: none;
+      padding: 4px 2px;
+      color: #222;
+    }
+    td textarea {
+      min-height: 32px;
+      max-height: 120px;
+    }
+    .add-row-btn {
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+      padding: 6px 14px;
+      font-size: 0.97rem;
+      margin: 12px 0 12px 0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-row-btn:hover {
+      background: #bbdefb;
+    }
+    .bottom-space {
+      height: var(--bottom-space);
+      background: transparent;
+    }
+    @media (max-width: 800px) {
+      .container { padding: 10px; }
+      th, td { font-size: 0.95rem; padding: 7px 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Client Acquisition Tracking Worksheet</h1>
+    <div class="toolbar">
+      <button onclick="addSector()">+ Add Sector</button>
+      <button onclick="addStatus()">+ Add Status</button>
+    </div>
+    <div id="sectors"></div>
+    <div class="bottom-space"></div>
+  </div>
+<script>
+const defaultStatuses = ['Not Contacted', 'Contacted', 'Follow-up Required', 'Interested', 'Not Interested'];
+let statusOptions = [...defaultStatuses];
+
+const initialSectors = [
+  {
+    name: 'FOOD/ICECREAMS',
+    clients: [
+      ["Good Flipping Burgers", "", "", "", "", "", "", "High", "", ""],
+      ["Serial Grillers", "", "", "", "", "", "", "Medium", "", ""],
+      ["GO zero ice creams", "", "", "", "", "", "", "High", "", ""]
+    ]
+  },
+  {
+    name: 'JEWELLERS',
+    clients: [
+      ["Jet Gems", "", "", "", "", "", "", "Medium", "", ""],
+      ["Zen Diamonds", "", "", "", "", "", "", "High", "", ""],
+      ["Razwada Polki Jadau & Diamond Jewellery", "", "", "", "", "", "", "Medium", "", ""],
+      ["MK Jewels", "", "", "", "", "", "", "Medium", "", ""],
+      ["Mehta Brothers Jewellers", "", "", "", "", "", "", "High", "", ""],
+      ["Irasva Fine Jewellery", "", "", "", "", "", "", "Medium", "", ""],
+      ["Popley Jewellers", "", "", "", "", "", "", "High", "", ""],
+      ["Popley Eternal", "", "", "", "", "", "", "Medium", "", ""],
+      ["Minawala Jewellers", "", "", "", "", "", "", "High", "", ""],
+      ["Amrapali Jaipur", "", "", "", "", "", "", "High", "", ""]
+    ]
+  },
+  {
+    name: 'APPAREL',
+    clients: [
+      ["Asuka", "", "", "", "", "", "", "Medium", "", ""],
+      ["Kakli", "", "", "", "", "", "", "Medium", "", ""],
+      ["House Of Anita Dongre Private Limited", "", "", "", "", "", "", "High", "", ""],
+      ["Varuna D Jani - The Designer Atelier", "", "", "", "", "", "", "Medium", "", ""]
+    ]
+  }
+];
+
+const colHeaders = [
+  "Client Name",
+  "Contact Person",
+  "Phone",
+  "Email",
+  "Status",
+  "Last Contact",
+  "Next Follow Up",
+  "Priority",
+  "Address",
+  "Notes"
+];
+
+const priorityOptions = ["High", "Medium", "Low"];
+
+let sectors = JSON.parse(localStorage.getItem('vppcas-sectors')) || initialSectors;
+
+function saveSectors() {
+  localStorage.setItem('vppcas-sectors', JSON.stringify(sectors));
+}
+
+function saveStatuses() {
+  localStorage.setItem('vppcas-statuses', JSON.stringify(statusOptions));
+}
+
+function loadStatuses() {
+  const stored = localStorage.getItem('vppcas-statuses');
+  if (stored) statusOptions = JSON.parse(stored);
+}
+loadStatuses();
+
+function renderSectors() {
+  const sectorsDiv = document.getElementById('sectors');
+  sectorsDiv.innerHTML = '';
+  sectors.forEach((sector, sectorIdx) => {
+    const sectorCard = document.createElement('div');
+    sectorCard.className = 'sector-table';
+    // Header
+    const header = document.createElement('div');
+    header.className = 'sector-header';
+    header.innerHTML = `<span>${sector.name}</span> <button class="add-row-btn" onclick="addClientRow(${sectorIdx})">+ Add Client</button>`;
+    sectorCard.appendChild(header);
+
+    // Table
+    const table = document.createElement('table');
+    // Table Head
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+    colHeaders.forEach((col, i) => {
+      const th = document.createElement('th');
+      th.innerText = col;
+      // Allow resizing row height by dragging
+      th.style.userSelect = 'none';
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+    table.appendChild(thead);
+
+    // Table Body
+    const tbody = document.createElement('tbody');
+    sector.clients.forEach((client, rowIdx) => {
+      const tr = document.createElement('tr');
+      colHeaders.forEach((col, colIdx) => {
+        const td = document.createElement('td');
+        if (col === "Priority") {
+          const sel = document.createElement('select');
+          priorityOptions.forEach(opt => {
+            const o = document.createElement('option');
+            o.value = o.innerText = opt;
+            if (client[colIdx] === opt) o.selected = true;
+            sel.appendChild(o);
+          });
+          sel.value = client[colIdx] || "";
+          sel.onchange = e => {
+            sectors[sectorIdx].clients[rowIdx][colIdx] = sel.value;
+            saveSectors();
+          };
+          td.appendChild(sel);
+        } else if (col === "Status") {
+          const sel = document.createElement('select');
+          statusOptions.forEach(opt => {
+            const o = document.createElement('option');
+            o.value = o.innerText = opt;
+            if (client[colIdx] === opt) o.selected = true;
+            sel.appendChild(o);
+          });
+          sel.value = client[colIdx] || "";
+          sel.onchange = e => {
+            sectors[sectorIdx].clients[rowIdx][colIdx] = sel.value;
+            saveSectors();
+          };
+          td.appendChild(sel);
+        } else if (col === "Notes" || col === "Address") {
+          const ta = document.createElement('textarea');
+          ta.value = client[colIdx] || "";
+          ta.oninput = e => {
+            sectors[sectorIdx].clients[rowIdx][colIdx] = ta.value;
+            saveSectors();
+          };
+          ta.rows = 2;
+          td.appendChild(ta);
+        } else {
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.value = client[colIdx] || "";
+          inp.oninput = e => {
+            sectors[sectorIdx].clients[rowIdx][colIdx] = inp.value;
+            saveSectors();
+          };
+          td.appendChild(inp);
+        }
+        // Row resizing
+        td.style.resize = 'vertical';
+        td.style.overflow = 'auto';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    sectorCard.appendChild(table);
+    sectorsDiv.appendChild(sectorCard);
+  });
+}
+
+// Add Sector
+function addSector() {
+  let name = prompt("Enter new sector name:");
+  if (!name) return;
+  name = name.trim();
+  if (!name) return;
+  sectors.push({ name, clients: [] });
+  saveSectors();
+  renderSectors();
+}
+
+// Add Status
+function addStatus() {
+  let status = prompt("Enter new status:");
+  if (!status) return;
+  status = status.trim();
+  if (!status) return;
+  if (!statusOptions.includes(status)) {
+    statusOptions.push(status);
+    saveStatuses();
+    renderSectors();
+    alert('Status added! You can now select it in the Status dropdown.');
+  } else {
+    alert('That status already exists.');
+  }
+}
+
+// Add Client Row
+function addClientRow(sectorIdx) {
+  sectors[sectorIdx].clients.push(Array(colHeaders.length).fill(""));
+  saveSectors();
+  renderSectors();
+}
+
+// Initial Render
+renderSectors();
+</script>
+</body>
+</html>
