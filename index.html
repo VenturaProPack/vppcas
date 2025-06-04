@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VPP Client Acquisition System</title>
+    <script src="https://bossanova.uk/jspreadsheet/v5/jspreadsheet.js"></script>
+    <script src="https://jsuites.net/v5/jsuites.js"></script>
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v5/jspreadsheet.css">
+    <link rel="stylesheet" href="https://jsuites.net/v5/jsuites.css">
+    <style>
+        body { max-width: 1200px; margin: 20px auto; padding: 0 20px }
+        .toolbar { margin: 15px 0; display: flex; gap: 10px }
+        button { padding: 8px 15px; background: #1565c0; color: white; border: none; border-radius: 4px }
+    </style>
+</head>
+<body>
+    <h1>VPP Client Acquisition Tracker</h1>
+    
+    <div class="toolbar">
+        <button onclick="addColumn()">Add Column</button>
+        <button onclick="addSector()">Add Sector</button>
+        <button onclick="saveData()">Save Data</button>
+    </div>
+    
+    <div id="spreadsheet"></div>
+
+<script>
+// Preloaded client data
+const initialData = {
+    "FOOD/ICECREAMS": [
+        ['Good Flipping Burgers', '', '', '', '', 'High'],
+        ['Serial Grillers', '', '', '', '', 'Medium'],
+        ['GO zero ice creams', '', '', '', '', 'High']
+    ],
+    "JEWELLERS": [
+        ['Jet Gems', '', '', '', '', 'Medium'],
+        ['Zen Diamonds', '', '', '', '', 'High'],
+        ['Razwada Polki Jadau & Diamond Jewellery', '', '', '', '', 'Medium'],
+        ['MK Jewels', '', '', '', '', 'Medium'],
+        ['Mehta Brothers Jewellers', '', '', '', '', 'High'],
+        ['Irasva Fine Jewellery', '', '', '', '', 'Medium'],
+        ['Popley Jewellers', '', '', '', '', 'High'],
+        ['Popley Eternal', '', '', '', '', 'Medium'],
+        ['Minawala Jewellers', '', '', '', '', 'High'],
+        ['Amrapali Jaipur', '', '', '', '', 'High']
+    ],
+    "APPAREL": [
+        ['Asuka', '', '', '', '', 'Medium'],
+        ['Kakli', '', '', '', '', 'Medium'],
+        ['House Of Anita Dongre Private Limited', '', '', '', '', 'High'],
+        ['Varuna D Jani - The Designer Atelier', '', '', '', '', 'Medium']
+    ]
+};
+
+let spreadsheet = jspreadsheet(document.getElementById('spreadsheet'), {
+    minDimensions: [10, 6],
+    allowInsertColumn: true,
+    allowDeleteColumn: true,
+    columnResize: true,
+    columnDrag: true,
+    columns: [
+        { type: 'text', title: 'Client Name', width: 200 },
+        { type: 'text', title: 'Contact Person', width: 150 },
+        { type: 'text', title: 'Email', width: 200 },
+        { type: 'text', title: 'Phone', width: 120 },
+        { type: 'text', title: 'Address', width: 300 },
+        { type: 'dropdown', title: 'Priority', width: 100, source: ['High', 'Medium', 'Low'] }
+    ],
+    worksheets: Object.entries(initialData).map(([sector, data]) => ({
+        title: sector,
+        data: data
+    }))
+});
+
+// Add new column
+function addColumn() {
+    spreadsheet.insertColumn([{
+        type: 'text',
+        title: 'New Column',
+        width: 150
+    }]);
+}
+
+// Add new sector
+function addSector() {
+    const sectorName = prompt('Enter new sector name:');
+    if (sectorName) {
+        spreadsheet.addWorksheet({
+            title: sectorName,
+            data: [['New Client', '', '', '', '', 'Medium']]
+        });
+    }
+}
+
+// Save data to localStorage
+function saveData() {
+    const data = spreadsheet.getData();
+    localStorage.setItem('vppcas-data', JSON.stringify(data));
+    alert('Data saved successfully!');
+}
+
+// Load saved data
+window.onload = () => {
+    const savedData = localStorage.getItem('vppcas-data');
+    if (savedData) {
+        spreadsheet.setData(JSON.parse(savedData));
+    }
+}
+</script>
+</body>
+</html>
