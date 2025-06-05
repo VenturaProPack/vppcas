@@ -1,216 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Acquisition Tracking</title>
-    <link href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css" rel="stylesheet">
-    <style>
-        /* CRED-inspired Styling */
-        :root {
-            --bg-dark: #121212; /* Dark background */
-            --text-light: #E0E0E0; /* Light text for contrast - slightly dimmed for less harshness */
-            --accent-color: #00FF96; /* Vibrant accent like CRED */
-            --table-bg: #1E1E1E; /* Darker table background */
-            --table-header-bg: #2C2C2C; /* Slightly lighter header */
-            --row-hover: rgba(0, 255, 150, 0.1); /* Subtle hover effect */
-            --text-dark-for-table: #333333; /* Darker text for table cells for visibility */
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            padding: 20px;
-            margin: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            background-color: var(--table-bg); /* Container background to match table for seamless look */
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            color: var(--accent-color);
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 500;
-            padding-top: 20px; /* Added padding so title isn't at very top of container */
-        }
-
-        .toolbar {
-            display: flex;
-            justify-content: flex-end;
-            padding: 10px 20px;
-            background-color: var(--table-header-bg);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .toolbar button {
-            background-color: var(--accent-color);
-            color: var(--bg-dark);
-            border: none;
-            padding: 10px 15px;
-            margin-left: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 500;
-        }
-
-        .toolbar button:hover {
-            background-color: #00B870;
-        }
-
-        /* Handsontable Styling */
-        .handsontable {
-            background-color: var(--table-bg) !important; /* Ensuring table itself uses dark bg */
-            color: var(--text-dark-for-table) !important; /* Changed general table text to dark */
-            border-radius: 0 0 12px 12px; /* Rounded bottom corners as top is covered by toolbar/title */
-            overflow: hidden;
-        }
-
-        .handsontable th {
-            background-color: var(--table-header-bg) !important;
-            color: var(--text-light) !important; /* Header text remains light for contrast with dark header bg */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-            font-weight: 500;
-        }
-
-        .handsontable td {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: var(--text-dark-for-table) !important; /* Darker text color for better visibility on light cell background */
-            background-color: #ffffff !important; /* Making cell background light for dark text */
-        }
-
-        .handsontable tr:hover td {
-            background-color: #f0f0f0 !important; /* Lighter hover for light cells */
-        }
-
-        /* Ensure dropdown editors also have readable text */
-        .handsontable .htDropdownMenu td {
-             color: #333333 !important; /* Dark text for dropdown menu items */
-        }
-        .handsontable .htAutocompleteArrow {
-            color: var(--text-dark-for-table) !important; /* Ensure dropdown arrow is visible */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Client Acquisition Tracking Worksheet</title>
+  <link href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #00ff96;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .toolbar {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .toolbar button {
+      background: #00ff96;
+      border: none;
+      color: #121212;
+      padding: 10px 16px;
+      margin-left: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .toolbar button:hover {
+      background: #00cc7a;
+    }
+    .handsontable {
+      border-radius: 8px !important;
+      background: #fff !important;
+      color: #222 !important;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Client Acquisition Tracking</h1>
-        <div class="toolbar">
-            <button onclick="addRow()">Add Row</button>
-            <button onclick="addStatus()">Add Status</button>
-            <button onclick="addSector()">Add Sector</button>
-        </div>
-        <div id="hot"></div>
+  <div class="container">
+    <h1>Client Acquisition Tracking Worksheet</h1>
+    <div class="toolbar">
+      <button id="addRowBtn">Add Row</button>
+      <button id="addStatusBtn">Add Status</button>
+      <button id="addSectorBtn">Add Sector</button>
     </div>
+    <div id="hot"></div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
-    <script>
-        const container = document.getElementById('hot');
-        let hot;
+  <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
+  <script>
+    const container = document.getElementById('hot');
 
-        // Initial Data - Prefilled (as per requirement)
-        const initialData = [
-            ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['Jet Gems', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['zen diamonds', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['razwada polki jadau & diamond jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['MK jewels', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['mehta brothers jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['irasva fine jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['popley jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['popley eternal', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['minawala jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['Amrapali Jaipur', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['asuka', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['kakli', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['House Of Anita Dongre Private Limited', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
-            ['varuna d jani - the designer atelier', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', '']
-        ];
+    let sectors = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
+    let statuses = ['Not Connected'];
+    let priorities = ['High', 'Medium', 'Low'];
 
-        // Initial Dropdown Options
-        let sectorOptions = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
-        let statusOptions = ['Not Connected'];
-        let priorityOptions = ['High', 'Medium', 'Low'];
+    let data = [
+      ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['Jet Gems', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['zen diamonds', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['razwada polki jadau & diamond jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['MK jewels', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['mehta brothers jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['irasva fine jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['popley jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['popley eternal', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['minawala jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['Amrapali Jaipur', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['asuka', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['kakli', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['House Of Anita Dongre Private Limited', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+      ['varuna d jani - the designer atelier', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', '']
+    ];
 
-        // Handsontable Configuration
-        hot = new Handsontable(container, {
-            data: initialData,
-            colHeaders: ['Client Name', 'Sector', 'Phone', 'Contact Person', 'Status', 'Last Contact', 'Next Follow Up', 'Priority', 'Email', 'Notes', 'Address'],
-            columns: [
-                { data: 0, type: 'text' },
-                { data: 1, type: 'dropdown', source: sectorOptions },
-                { data: 2, type: 'text' },
-                { data: 3, type: 'text' },
-                { data: 4, type: 'dropdown', source: statusOptions },
-                { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                { data: 7, type: 'dropdown', source: priorityOptions },
-                { data: 8, type: 'text' },
-                { data: 9, type: 'text' },
-                { data: 10, type: 'text' }
-            ],
-            height: 'auto',
-            licenseKey: 'non-commercial-and-evaluation',
-            wordWrap: true,
-            autoColumnSize: true,
-            autoRowSize: true,
-            contextMenu: true,
-            className: "htCenter",
-            manualColumnResize: true,
-            manualRowResize: true
+    const hot = new Handsontable(container, {
+      data: data,
+      colHeaders: [
+        'Client Name', 'Sector', 'Phone', 'Contact Person', 'Status',
+        'Last Contact', 'Next Follow Up', 'Priority', 'Email', 'Notes', 'Address'
+      ],
+      columns: [
+        { type: 'text' },
+        { type: 'dropdown', source: sectors },
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'dropdown', source: statuses },
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
+        { type: 'dropdown', source: priorities },
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'text' }
+      ],
+      manualColumnResize: true,
+      manualRowResize: true,
+      contextMenu: true,
+      height: 600,
+      licenseKey: 'non-commercial-and-evaluation'
+    });
+
+    // Add Row button event
+    document.getElementById('addRowBtn').addEventListener('click', () => {
+      hot.alter('insert_row', hot.countRows());
+    });
+
+    // Add Status button event
+    document.getElementById('addStatusBtn').addEventListener('click', () => {
+      const newStatus = prompt('Enter new status:');
+      if (newStatus && !statuses.includes(newStatus)) {
+        statuses.push(newStatus);
+        hot.updateSettings({
+          columns: hot.getSettings().columns.map((col, idx) => {
+            if (idx === 4) return {...col, source: statuses};
+            return col;
+          })
         });
+      }
+    });
 
-        // Function to Add New Row
-        function addRow() {
-            hot.alter('insert_row', hot.countRows());
-        }
-
-        // Function to Add New Status
-        function addStatus() {
-            const newStatus = prompt("Enter new status:");
-            if (newStatus && statusOptions.indexOf(newStatus) === -1) {
-                statusOptions.push(newStatus);
-                hot.updateSettings({
-                    columns: hot.getSettings().columns.map((col, index) => {
-                        if (index === 4) { // Status column index
-                            return { ...col, source: statusOptions };
-                        }
-                        return col;
-                    })
-                });
-            }
-        }
-
-        // Function to Add New Sector
-        function addSector() {
-            const newSector = prompt("Enter new sector:");
-            if (newSector && sectorOptions.indexOf(newSector) === -1) {
-                sectorOptions.push(newSector);
-                hot.updateSettings({
-                     columns: hot.getSettings().columns.map((col, index) => {
-                        if (index === 1) { // Sector column index
-                            return { ...col, source: sectorOptions };
-                        }
-                        return col;
-                    })
-                });
-            }
-        }
-    </script>
+    // Add Sector button event
+    document.getElementById('addSectorBtn').addEventListener('click', () => {
+      const newSector = prompt('Enter new sector:');
+      if (newSector && !sectors.includes(newSector)) {
+        sectors.push(newSector);
+        hot.updateSettings({
+          columns: hot.getSettings().columns.map((col, idx) => {
+            if (idx === 1) return {...col, source: sectors};
+            return col;
+          })
+        });
+      }
+    });
+  </script>
 </body>
 </html>
-
 
 
 
