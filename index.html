@@ -1,167 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Client Acquisition Tracking Worksheet</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
-  <style>
-    :root {
-      --main-bg: #222326;
-      --card-bg: #f3c846;
-      --accent: #222326;
-      --border: #bfa431;
-    }
-    body {
-      background: var(--main-bg);
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 20px;
-      border: 2px solid var(--border);
-    }
-    .toolbar {
-      margin-bottom: 15px;
-      text-align: right;
-    }
-    .toolbar button {
-      background: var(--accent);
-      color: var(--card-bg);
-      border: none;
-      padding: 8px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-    .priority-pill {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .priority-pill.high { background: #e53935; color: white; }
-    .priority-pill.medium { background: #f3c846; color: #222326; }
-    .priority-pill.low { background: #44474b; color: white; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Acquisition Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css" rel="stylesheet">
+    <style>
+        /* CRED-inspired Styling */
+        :root {
+            --bg-dark: #121212; /* Dark background */
+            --text-light: #fff; /* Light text for contrast */
+            --accent-color: #00FF96; /* Vibrant accent like CRED */
+            --table-bg: #1E1E1E; /* Darker table background */
+            --table-header-bg: #2C2C2C; /* Slightly lighter header */
+            --row-hover: rgba(0, 255, 150, 0.1); /* Subtle hover effect */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: var(--table-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            background-color: var(--table-header-bg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toolbar button {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toolbar button:hover {
+            background-color: #00B870;
+        }
+
+        /* Handsontable Styling */
+        .handsontable {
+            background-color: var(--table-bg) !important;
+            color: var(--text-light) !important;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .handsontable th {
+            background-color: var(--table-header-bg) !important;
+            color: var(--text-light) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .handsontable td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .handsontable tr:hover td {
+            background-color: var(--row-hover) !important;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="toolbar">
-      <button onclick="addRow()">+ Add Row</button>
-      <button onclick="addSector()">+ Add Sector</button>
-      <button onclick="addStatus()">+ Add Status</button>
+
+    <div class="container">
+        <h1>Client Acquisition Tracking</h1>
+        <div class="toolbar">
+            <button onclick="addRow()">Add Row</button>
+            <button onclick="addStatus()">Add Status</button>
+            <button onclick="addSector()">Add Sector</button>
+        </div>
+        <div id="hot"></div>
     </div>
-    <div id="hot"></div>
-  </div>
 
-<script>
-// Initialize configuration - from spreadsheet preference [1]
-let sectors = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
-let statuses = ['Not Contacted', 'Contacted', 'Follow-up Required', 'Interested', 'Not Interested'];
-let priorities = ['High', 'Medium', 'Low'];
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
+    <script>
+        const container = document.getElementById('hot');
+        let hot;
 
-// Initialize Handsontable
-const container = document.getElementById('hot');
-const hot = new Handsontable(container, {
-  data: [
-    ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', ''],
-    ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'Medium', '', ''],
-    ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', '']
-  ],
-  colHeaders: ['Client Name', 'Sector', 'Contact Person', 'Phone', 'Status', 'Last Contact', 'Priority', 'Next Follow-up', 'Notes'],
-  columns: [
-    { type: 'text' },
-    { type: 'dropdown', source: sectors },
-    { type: 'text' },
-    { type: 'text' },
-    { type: 'dropdown', source: statuses },
-    { type: 'date', dateFormat: 'YYYY-MM-DD' },
-    { 
-      type: 'dropdown',
-      source: priorities,
-      renderer: function(instance, td, row, col, prop, value) {
-        Handsontable.renderers.DropdownRenderer.apply(this, arguments);
-        td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
-      }
-    },
-    { type: 'date', dateFormat: 'YYYY-MM-DD' },
-    { type: 'text' }
-  ],
-  height: 600,
-  licenseKey: 'non-commercial-and-evaluation',
-  manualColumnResize: true,
-  manualRowResize: true,
-  contextMenu: true
-});
+        // Initial Data - Prefilled (as per requirement)
+        const initialData = [
+            ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['Jet Gems', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['zen diamonds', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['razwada polki jadau & diamond jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['MK jewels', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['mehta brothers jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['irasva fine jewellery', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['popley jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['popley eternal', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['minawala jewellers', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['Amrapali Jaipur', 'JEWELLERS', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['asuka', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['kakli', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['House Of Anita Dongre Private Limited', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', ''],
+            ['varuna d jani - the designer atelier', 'APPAREL', '', '', 'Not Connected', '', '', 'Medium', '', '', '']
+        ];
 
-// Core functionality - added from previous conversation history entries
-function addRow() {
-  hot.alter('insert_row', hot.countRows());
-}
+        // Initial Dropdown Options
+        let sectorOptions = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
+        let statusOptions = ['Not Connected'];
+        let priorityOptions = ['High', 'Medium', 'Low'];
 
-function addSector() {
-  const sector = prompt('Enter new sector:');
-  if (sector && !sectors.includes(sector)) {
-    sectors.push(sector);
-    hot.updateSettings({
-      columns: [
-        { type: 'text' },
-        { type: 'dropdown', source: sectors },
-        { type: 'text' },
-        { type: 'text' },
-        { type: 'dropdown', source: statuses },
-        { type: 'date', dateFormat: 'YYYY-MM-DD' },
-        { 
-          type: 'dropdown',
-          source: priorities,
-          renderer: function(instance, td, row, col, prop, value) {
-            Handsontable.renderers.DropdownRenderer.apply(this, arguments);
-            td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
-          }
-        },
-        { type: 'date', dateFormat: 'YYYY-MM-DD' },
-        { type: 'text' }
-      ]
-    });
-  }
-}
+        // Handsontable Configuration
+        hot = new Handsontable(container, {
+            data: initialData,
+            colHeaders: ['Client Name', 'Sector', 'Phone', 'Contact Person', 'Status', 'Last Contact', 'Next Follow Up', 'Priority', 'Email', 'Notes', 'Address'],
+            columns: [
+                { data: 0, type: 'text' },
+                { data: 1, type: 'dropdown', source: sectorOptions },
+                { data: 2, type: 'text' },
+                { data: 3, type: 'text' },
+                { data: 4, type: 'dropdown', source: statusOptions },
+                { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                { data: 7, type: 'dropdown', source: priorityOptions },
+                { data: 8, type: 'text' },
+                { data: 9, type: 'text' },
+                { data: 10, type: 'text' }
+            ],
+            height: 'auto',
+            licenseKey: 'non-commercial-and-evaluation',
+            wordWrap: true,
+            autoColumnSize: true,
+            autoRowSize: true,
+            contextMenu: true,
+            className: "htCenter", 
+            manualColumnResize: true,
+            manualRowResize: true
+        });
 
-function addStatus() {
-  const status = prompt('Enter new status:');
-  if (status && !statuses.includes(status)) {
-    statuses.push(status);
-    hot.updateSettings({
-      columns: [
-        { type: 'text' },
-        { type: 'dropdown', source: sectors },
-        { type: 'text' },
-        { type: 'text' },
-        { type: 'dropdown', source: statuses },
-        { type: 'date', dateFormat: 'YYYY-MM-DD' },
-        { 
-          type: 'dropdown',
-          source: priorities,
-          renderer: function(instance, td, row, col, prop, value) {
-            Handsontable.renderers.DropdownRenderer.apply(this, arguments);
-            td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
-          }
-        },
-        { type: 'date', dateFormat: 'YYYY-MM-DD' },
-        { type: 'text' }
-      ]
-    });
-  }
-}
-</script>
+        // Function to Add New Row
+        function addRow() {
+            hot.alter('insert_row', hot.countRows());
+        }
+
+        // Function to Add New Status
+        function addStatus() {
+            const newStatus = prompt("Enter new status:");
+            if (newStatus && statusOptions.indexOf(newStatus) === -1) {
+                statusOptions.push(newStatus);
+                hot.updateSettings({
+                    columns: [
+                        { data: 0, type: 'text' },
+                        { data: 1, type: 'dropdown', source: sectorOptions },
+                        { data: 2, type: 'text' },
+                        { data: 3, type: 'text' },
+                        { data: 4, type: 'dropdown', source: statusOptions },
+                        { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                        { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                        { data: 7, type: 'dropdown', source: priorityOptions },
+                        { data: 8, type: 'text' },
+                        { data: 9, type: 'text' },
+                        { data: 10, type: 'text' }
+                    ]
+                });
+            }
+        }
+
+        // Function to Add New Sector
+        function addSector() {
+            const newSector = prompt("Enter new sector:");
+            if (newSector && sectorOptions.indexOf(newSector) === -1) {
+                sectorOptions.push(newSector);
+                hot.updateSettings({
+                    columns: [
+                        { data: 0, type: 'text' },
+                        { data: 1, type: 'dropdown', source: sectorOptions },
+                        { data: 2, type: 'text' },
+                        { data: 3, type: 'text' },
+                        { data: 4, type: 'dropdown', source: statusOptions },
+                        { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                        { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
+                        { data: 7, type: 'dropdown', source: priorityOptions },
+                        { data: 8, type: 'text' },
+                        { data: 9, type: 'text' },
+                        { data: 10, type: 'text' }
+                    ]
+                });
+            }
+        }
+    </script>
 </body>
 </html>
+
 
 
 
