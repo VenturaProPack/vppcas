@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Client Acquisition Tracking Worksheet</title>
-  <!-- Handsontable CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
   <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
@@ -117,19 +116,19 @@
       box-shadow: 0 1px 4px rgba(34,35,38,0.11);
     }
     .priority-pill.high {
-      background: #a81e2e;
-      border-color: #a81e2e;
+      background: #e53935;
+      border-color: #e53935;
       color: #fff;
     }
     .priority-pill.medium {
-      background: #bfa431;
+      background: #f3c846;
       border-color: #bfa431;
-      color: #fff;
+      color: #222326;
     }
     .priority-pill.low {
       background: #44474b;
       border-color: #44474b;
-      color: #f3c846;
+      color: #fff;
     }
     .bottom-space {
       height: 100px;
@@ -157,9 +156,9 @@
 <script>
   // Initial dropdown options
   let sectorOptions = [
-    'FOOD/ICECREAMS',
-    'JEWELLERS',
-    'APPAREL'
+    'Food/Ice Creams',
+    'Jewellers',
+    'Apparel'
   ];
   let statusOptions = [
     'Not Contacted',
@@ -170,27 +169,27 @@
     'Quote',
     'Success'
   ];
-  const priorityOptions = ['High', 'Medium', 'Low'];
+  const priorityOptions = ['Low', 'Medium', 'High'];
 
   // Initial data
   let data = [
-    ['FOOD/ICECREAMS', 'Good Flipping Burgers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['FOOD/ICECREAMS', 'Serial Grillers', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['FOOD/ICECREAMS', 'GO zero ice creams', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Jet Gems', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Zen Diamonds', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Razwada Polki Jadau & Diamond Jewellery', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'MK Jewels', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Mehta Brothers Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Irasva Fine Jewellery', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Popley Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Popley Eternal', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Minawala Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Amrapali Jaipur', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['APPAREL', 'Asuka', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['APPAREL', 'Kakli', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
-    ['APPAREL', 'House Of Anita Dongre Private Limited', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-    ['APPAREL', 'Varuna D Jani - The Designer Atelier', '', '', '', 'Not Contacted', '', '', 'Medium', '', '']
+    ['Good Flipping Burgers', 'Food/Ice Creams', '', '', '', '', '', '', 'High', '', ''],
+    ['Serial Grillers', 'Food/Ice Creams', '', '', '', '', '', '', 'Medium', '', ''],
+    ['GO zero ice creams', 'Food/Ice Creams', '', '', '', '', '', '', 'High', '', ''],
+    ['Jet Gems', 'Jewellers', '', '', '', '', '', '', 'Medium', '', ''],
+    ['Zen Diamonds', 'Jewellers', '', '', '', '', '', '', 'High', '', ''],
+    ['Razwada Polki Jadau & Diamond Jewellery', 'Jewellers', '', '', '', '', '', '', 'Medium', '', ''],
+    ['MK Jewels', 'Jewellers', '', '', '', '', '', '', 'Medium', '', ''],
+    ['Mehta Brothers Jewellers', 'Jewellers', '', '', '', '', '', '', 'High', '', ''],
+    ['Irasva Fine Jewellery', 'Jewellers', '', '', '', '', '', '', 'Medium', '', ''],
+    ['Popley Jewellers', 'Jewellers', '', '', '', '', '', '', 'High', '', ''],
+    ['Popley Eternal', 'Jewellers', '', '', '', '', '', '', 'Medium', '', ''],
+    ['Minawala Jewellers', 'Jewellers', '', '', '', '', '', '', 'High', '', ''],
+    ['Amrapali Jaipur', 'Jewellers', '', '', '', '', '', '', 'High', '', ''],
+    ['Asuka', 'Apparel', '', '', '', '', '', '', 'Medium', '', ''],
+    ['Kakli', 'Apparel', '', '', '', '', '', '', 'Medium', '', ''],
+    ['House Of Anita Dongre Private Limited', 'Apparel', '', '', '', '', '', '', 'High', '', ''],
+    ['Varuna D Jani - The Designer Atelier', 'Apparel', '', '', '', '', '', '', 'Medium', '', '']
   ];
 
   // Load from localStorage for persistence
@@ -209,36 +208,36 @@
   const hot = new Handsontable(container, {
     data: data,
     colHeaders: [
-      'Sector',
       'Client Name',
-      'Contact Person',
+      'Sector',
+      'Address',
       'Phone',
       'Email',
+      'Contact Person',
       'Status',
-      'Contact Date',
       'Last Contact',
+      'Next Follow-up',
       'Priority',
-      'Address',
       'Notes'
     ],
     columns: [
-      { type: 'dropdown', source: sectorOptions, strict: false, allowInvalid: false },
-      { type: 'text' },
-      { type: 'text' },
-      { type: 'text' },
-      { type: 'text' },
-      { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
-      { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
-      { type: 'text' },
+      { type: 'text' }, // Client Name
+      { type: 'dropdown', source: sectorOptions, strict: false, allowInvalid: false }, // Sector
+      { type: 'text' }, // Address
+      { type: 'text' }, // Phone
+      { type: 'text' }, // Email
+      { type: 'text' }, // Contact Person
+      { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false }, // Status
+      { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false }, // Last Contact
+      { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false }, // Next Follow-up
       { 
         type: 'dropdown', 
         source: priorityOptions, 
         strict: false, 
         allowInvalid: false,
         renderer: priorityRenderer
-      },
-      { type: 'text' },
-      { type: 'text' }
+      }, // Priority
+      { type: 'text' } // Notes
     ],
     stretchH: 'all',
     width: '100%',
@@ -254,7 +253,7 @@
     },
     cells: function(row, col) {
       var cellProperties = {};
-      if (col === 8) { // Priority column
+      if (col === 9) { // Priority column
         cellProperties.renderer = priorityRenderer;
       }
       return cellProperties;
@@ -295,6 +294,7 @@
       sectorOptions.push(sector);
       hot.updateSettings({
         columns: [
+          { type: 'text' },
           { type: 'dropdown', source: sectorOptions, strict: false, allowInvalid: false },
           { type: 'text' },
           { type: 'text' },
@@ -302,9 +302,8 @@
           { type: 'text' },
           { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
           { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
-          { type: 'text' },
+          { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
           { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false, renderer: priorityRenderer },
-          { type: 'text' },
           { type: 'text' }
         ]
       });
@@ -325,6 +324,7 @@
       statusOptions.push(status);
       hot.updateSettings({
         columns: [
+          { type: 'text' },
           { type: 'dropdown', source: sectorOptions, strict: false, allowInvalid: false },
           { type: 'text' },
           { type: 'text' },
@@ -332,9 +332,8 @@
           { type: 'text' },
           { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
           { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
-          { type: 'text' },
+          { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
           { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false, renderer: priorityRenderer },
-          { type: 'text' },
           { type: 'text' }
         ]
       });
@@ -350,10 +349,10 @@
     const tableData = hot.getData();
     let total = 0, notContacted = 0, contacted = 0, highPriority = 0;
     tableData.forEach(row => {
-      if (row[1]) total++;
-      if (row[5] === 'Not Contacted') notContacted++;
-      if (row[5] === 'Contacted') contacted++;
-      if (row[8] === 'High') highPriority++;
+      if (row[0]) total++;
+      if (row[6] === 'Not Contacted') notContacted++;
+      if (row[6] === 'Contacted') contacted++;
+      if (row[9] === 'High') highPriority++;
     });
     document.getElementById('summaryBar').innerHTML = `
       <div class="summary-card">Total Clients: <span class="summary-number">${total}</span></div>
