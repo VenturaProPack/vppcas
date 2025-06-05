@@ -73,9 +73,7 @@ const hot = new Handsontable(container, {
   data: [
     ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', ''],
     ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'Medium', '', ''],
-    ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', ''],
-    ['Jet Gems', 'JEWELLERS', '', '', 'Not Contacted', '', 'Medium', '', ''],
-    ['Zen Diamonds', 'JEWELLERS', '', '', 'Not Contacted', '', 'High', '', '']
+    ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', '']
   ],
   colHeaders: ['Client Name', 'Sector', 'Contact Person', 'Phone', 'Status', 'Last Contact', 'Priority', 'Next Follow-up', 'Notes'],
   columns: [
@@ -105,7 +103,12 @@ const hot = new Handsontable(container, {
 
 // Core functionality
 function addRow() {
-  hot.alter('insert_row', hot.countRows());
+  try {
+    hot.alter('insert_row', hot.countRows());
+  } catch (error) {
+    console.error('Error adding row:', error);
+    alert('Failed to add row. Please check console for details.');
+  }
 }
 
 function addSector() {
