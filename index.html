@@ -6,11 +6,12 @@
   <!-- Handsontable CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
   <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
   <style>
     body {
       background: #222326;
       color: #222326;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -19,9 +20,9 @@
       max-width: 1200px;
       margin: 40px auto 0 auto;
       background: #f3c846;
-      border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(34,35,38,0.10);
-      padding: 32px 36px 32px 36px;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(34,35,38,0.13);
+      padding: 36px 40px 32px 40px;
       min-height: 700px;
       position: relative;
       border: 2px solid #bfa431;
@@ -30,41 +31,71 @@
       text-align: center;
       color: #222326;
       margin-bottom: 32px;
-      font-size: 2.3rem;
+      font-size: 2.5rem;
       letter-spacing: 2px;
+      font-weight: 700;
     }
     .toolbar {
       display: flex;
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
       justify-content: flex-end;
     }
     .toolbar button {
       background: #222326;
       color: #f3c846;
       border: none;
-      border-radius: 6px;
+      border-radius: 7px;
       padding: 10px 22px;
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.2s;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(34,35,38,0.09);
     }
     .toolbar button:hover {
       background: #44474b;
     }
+    .summary-bar {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 26px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+    .summary-card {
+      background: #222326;
+      color: #f3c846;
+      border-radius: 10px;
+      padding: 18px 32px;
+      min-width: 180px;
+      font-size: 1.14rem;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(34,35,38,0.10);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .summary-card .summary-number {
+      color: #00cfff;
+      font-size: 1.25em;
+      font-weight: 700;
+      margin-left: 8px;
+    }
     #hot {
       margin-bottom: 100px;
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(34,35,38,0.12);
+      box-shadow: 0 2px 8px rgba(34,35,38,0.13);
     }
     .ht_master .htCore thead th {
       background: #222326 !important;
       color: #f3c846 !important;
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-size: 1.07rem;
+      font-weight: 700;
       border-bottom: 2px solid #bfa431 !important;
+      letter-spacing: 0.5px;
     }
     .ht_master .htCore td {
       background: #fffbe9 !important;
@@ -72,9 +103,42 @@
       font-size: 1rem;
       border-bottom: 1px solid #bfa431 !important;
     }
+    .priority-pill {
+      display: inline-block;
+      padding: 3px 18px;
+      border-radius: 16px;
+      font-size: 1em;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.5px;
+      background: #bfa431;
+      color: #fff;
+      border: 1.5px solid #bfa431;
+      box-shadow: 0 1px 4px rgba(34,35,38,0.11);
+    }
+    .priority-pill.high {
+      background: #a81e2e;
+      border-color: #a81e2e;
+      color: #fff;
+    }
+    .priority-pill.medium {
+      background: #bfa431;
+      border-color: #bfa431;
+      color: #fff;
+    }
+    .priority-pill.low {
+      background: #44474b;
+      border-color: #44474b;
+      color: #f3c846;
+    }
     .bottom-space {
       height: 100px;
       background: transparent;
+    }
+    @media (max-width: 800px) {
+      .container { padding: 10px; }
+      h1 { font-size: 1.5rem; }
+      .summary-card { min-width: 120px; padding: 12px 10px; font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -86,6 +150,7 @@
       <button onclick="addSector()">+ Add Sector</button>
       <button onclick="addStatus()">+ Add Status</button>
     </div>
+    <div class="summary-bar" id="summaryBar"></div>
     <div id="hot"></div>
     <div class="bottom-space"></div>
   </div>
@@ -101,32 +166,34 @@
     'Contacted',
     'Follow-up Required',
     'Interested',
-    'Not Interested'
+    'Not Interested',
+    'Quote',
+    'Success'
   ];
   const priorityOptions = ['High', 'Medium', 'Low'];
 
   // Initial data
   let data = [
-    ['FOOD/ICECREAMS', 'Good Flipping Burgers', '', '', '', '', '', 'High', '', ''],
-    ['FOOD/ICECREAMS', 'Serial Grillers', '', '', '', '', '', 'Medium', '', ''],
-    ['FOOD/ICECREAMS', 'GO zero ice creams', '', '', '', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Jet Gems', '', '', '', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Zen Diamonds', '', '', '', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Razwada Polki Jadau & Diamond Jewellery', '', '', '', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'MK Jewels', '', '', '', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Mehta Brothers Jewellers', '', '', '', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Irasva Fine Jewellery', '', '', '', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Popley Jewellers', '', '', '', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Popley Eternal', '', '', '', '', '', 'Medium', '', ''],
-    ['JEWELLERS', 'Minawala Jewellers', '', '', '', '', '', 'High', '', ''],
-    ['JEWELLERS', 'Amrapali Jaipur', '', '', '', '', '', 'High', '', ''],
-    ['APPAREL', 'Asuka', '', '', '', '', '', 'Medium', '', ''],
-    ['APPAREL', 'Kakli', '', '', '', '', '', 'Medium', '', ''],
-    ['APPAREL', 'House Of Anita Dongre Private Limited', '', '', '', '', '', 'High', '', ''],
-    ['APPAREL', 'Varuna D Jani - The Designer Atelier', '', '', '', '', '', 'Medium', '', '']
+    ['FOOD/ICECREAMS', 'Good Flipping Burgers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['FOOD/ICECREAMS', 'Serial Grillers', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['FOOD/ICECREAMS', 'GO zero ice creams', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['JEWELLERS', 'Jet Gems', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['JEWELLERS', 'Zen Diamonds', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['JEWELLERS', 'Razwada Polki Jadau & Diamond Jewellery', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['JEWELLERS', 'MK Jewels', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['JEWELLERS', 'Mehta Brothers Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['JEWELLERS', 'Irasva Fine Jewellery', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['JEWELLERS', 'Popley Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['JEWELLERS', 'Popley Eternal', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['JEWELLERS', 'Minawala Jewellers', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['JEWELLERS', 'Amrapali Jaipur', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['APPAREL', 'Asuka', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['APPAREL', 'Kakli', '', '', '', 'Not Contacted', '', '', 'Medium', '', ''],
+    ['APPAREL', 'House Of Anita Dongre Private Limited', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
+    ['APPAREL', 'Varuna D Jani - The Designer Atelier', '', '', '', 'Not Contacted', '', '', 'Medium', '', '']
   ];
 
-  // Save/load from localStorage for persistence
+  // Load from localStorage for persistence
   if (localStorage.getItem('vppcas-data')) {
     data = JSON.parse(localStorage.getItem('vppcas-data'));
   }
@@ -148,8 +215,8 @@
       'Phone',
       'Email',
       'Status',
+      'Contact Date',
       'Last Contact',
-      'Next Follow Up',
       'Priority',
       'Address',
       'Notes'
@@ -161,9 +228,15 @@
       { type: 'text' },
       { type: 'text' },
       { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
+      { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
       { type: 'text' },
-      { type: 'text' },
-      { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false },
+      { 
+        type: 'dropdown', 
+        source: priorityOptions, 
+        strict: false, 
+        allowInvalid: false,
+        renderer: priorityRenderer
+      },
       { type: 'text' },
       { type: 'text' }
     ],
@@ -174,17 +247,42 @@
     manualRowResize: true,
     rowHeaders: true,
     contextMenu: true,
-    licenseKey: 'non-commercial-and-evaluation'
+    licenseKey: 'non-commercial-and-evaluation',
+    afterChange: function() {
+      localStorage.setItem('vppcas-data', JSON.stringify(hot.getData()));
+      updateSummary();
+    },
+    cells: function(row, col) {
+      var cellProperties = {};
+      if (col === 8) { // Priority column
+        cellProperties.renderer = priorityRenderer;
+      }
+      return cellProperties;
+    }
   });
 
-  // Save on any change
-  hot.addHook('afterChange', function() {
-    localStorage.setItem('vppcas-data', JSON.stringify(hot.getData()));
-  });
+  // Custom renderer for Priority column
+  function priorityRenderer(instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    td.className = 'priority-pill';
+    if (value === 'High') {
+      td.className += ' high';
+      td.textContent = 'High';
+    } else if (value === 'Medium') {
+      td.className += ' medium';
+      td.textContent = 'Medium';
+    } else if (value === 'Low') {
+      td.className += ' low';
+      td.textContent = 'Low';
+    } else {
+      td.className = '';
+    }
+  }
 
   // Add Row
   function addRow() {
     hot.alter('insert_row');
+    updateSummary();
   }
 
   // Add Sector
@@ -203,9 +301,9 @@
           { type: 'text' },
           { type: 'text' },
           { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
+          { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
           { type: 'text' },
-          { type: 'text' },
-          { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false },
+          { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false, renderer: priorityRenderer },
           { type: 'text' },
           { type: 'text' }
         ]
@@ -233,9 +331,9 @@
           { type: 'text' },
           { type: 'text' },
           { type: 'dropdown', source: statusOptions, strict: false, allowInvalid: false },
+          { type: 'date', dateFormat: 'YYYY-MM-DD', correctFormat: true, allowInvalid: false },
           { type: 'text' },
-          { type: 'text' },
-          { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false },
+          { type: 'dropdown', source: priorityOptions, strict: false, allowInvalid: false, renderer: priorityRenderer },
           { type: 'text' },
           { type: 'text' }
         ]
@@ -246,9 +344,29 @@
       alert('That status already exists.');
     }
   }
+
+  // Summary Bar
+  function updateSummary() {
+    const tableData = hot.getData();
+    let total = 0, notContacted = 0, contacted = 0, highPriority = 0;
+    tableData.forEach(row => {
+      if (row[1]) total++;
+      if (row[5] === 'Not Contacted') notContacted++;
+      if (row[5] === 'Contacted') contacted++;
+      if (row[8] === 'High') highPriority++;
+    });
+    document.getElementById('summaryBar').innerHTML = `
+      <div class="summary-card">Total Clients: <span class="summary-number">${total}</span></div>
+      <div class="summary-card">Not Contacted: <span class="summary-number">${notContacted}</span></div>
+      <div class="summary-card">Contacted: <span class="summary-number">${contacted}</span></div>
+      <div class="summary-card">High Priority: <span class="summary-number">${highPriority}</span></div>
+    `;
+  }
+  updateSummary();
 </script>
 </body>
 </html>
+
 
 
   
