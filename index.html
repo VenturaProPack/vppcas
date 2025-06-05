@@ -62,7 +62,7 @@
   </div>
 
 <script>
-// Initialize configuration
+// Initialize configuration - from spreadsheet preference [1]
 let sectors = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
 let statuses = ['Not Contacted', 'Contacted', 'Follow-up Required', 'Interested', 'Not Interested'];
 let priorities = ['High', 'Medium', 'Low'];
@@ -101,14 +101,9 @@ const hot = new Handsontable(container, {
   contextMenu: true
 });
 
-// Core functionality
+// Core functionality - added from previous conversation history entries
 function addRow() {
-  try {
-    hot.alter('insert_row', hot.countRows());
-  } catch (error) {
-    console.error('Error adding row:', error);
-    alert('Failed to add row. Please check console for details.');
-  }
+  hot.alter('insert_row', hot.countRows());
 }
 
 function addSector() {
@@ -167,6 +162,7 @@ function addStatus() {
 </script>
 </body>
 </html>
+
 
 
 
