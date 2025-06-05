@@ -5,13 +5,20 @@
   <title>Client Acquisition Tracking Worksheet</title>
   <style>
     :root {
-      --main-bg: #f7f9fa;
-      --card-bg: #fff;
-      --accent: #1976d2;
-      --border: #e0e0e0;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.07);
-      --row-hover: #e3f2fd;
+      --main-bg: #222326;
+      --card-bg: #f3c846;
+      --accent: #222326;
+      --border: #bfa431;
+      --radius: 14px;
+      --shadow: 0 4px 16px rgba(34,35,38,0.10);
+      --row-hover: #fffbe9;
+      --header-bg: #222326;
+      --header-color: #f3c846;
+      --th-bg: #ffe37b;
+      --th-color: #222326;
+      --btn-bg: #222326;
+      --btn-color: #f3c846;
+      --btn-hover: #44474b;
       --bottom-space: 100px;
     }
     body {
@@ -20,10 +27,10 @@
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      color: #222;
+      color: var(--accent);
     }
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 40px auto 0 auto;
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -31,6 +38,7 @@
       padding: 32px 36px 32px 36px;
       min-height: 700px;
       position: relative;
+      border: 2px solid var(--border);
     }
     h1 {
       text-align: center;
@@ -46,8 +54,8 @@
       justify-content: flex-end;
     }
     .toolbar button {
-      background: var(--accent);
-      color: #fff;
+      background: var(--btn-bg);
+      color: var(--btn-color);
       border: none;
       border-radius: 6px;
       padding: 10px 22px;
@@ -57,37 +65,52 @@
       font-weight: 500;
     }
     .toolbar button:hover {
-      background: #0d47a1;
+      background: var(--btn-hover);
     }
     .sector-table {
       margin-bottom: 44px;
       border-radius: var(--radius);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      background: #fafcff;
-      border: 1px solid var(--border);
-      overflow: hidden;
+      box-shadow: 0 1.5px 6px rgba(34,35,38,0.09);
+      background: #fffbe9;
+      border: 2px solid var(--border);
+      overflow: auto;
+      resize: both;
+      min-width: 340px;
+      min-height: 120px;
+      max-width: 100%;
+      max-height: 1000px;
+      position: relative;
     }
     .sector-header {
-      background: var(--accent);
-      color: #fff;
+      background: var(--header-bg);
+      color: var(--header-color);
       font-size: 1.15rem;
       font-weight: 600;
       padding: 14px 18px;
       letter-spacing: 1px;
-      border-bottom: 2px solid #1565c0;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sector-header span {
+      font-size: 1.1em;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
       font-size: 1rem;
+      background: transparent;
     }
     th, td {
       border-bottom: 1px solid var(--border);
       padding: 12px 10px;
       text-align: left;
       min-width: 110px;
-      background: #fff;
+      background: #fffbe9;
       vertical-align: middle;
       resize: vertical;
       overflow: auto;
@@ -95,15 +118,16 @@
       transition: background 0.2s;
     }
     th {
-      background: #f1f8fe;
+      background: var(--th-bg);
+      color: var(--th-color);
       font-weight: 600;
-      color: #1976d2;
       font-size: 1.02rem;
       cursor: pointer;
       position: sticky;
       top: 0;
       z-index: 2;
-      border-bottom: 2px solid #90caf9;
+      border-bottom: 2px solid var(--border);
+      user-select: none;
     }
     tr:hover td {
       background: var(--row-hover);
@@ -116,25 +140,27 @@
       outline: none;
       resize: none;
       padding: 4px 2px;
-      color: #222;
+      color: #222326;
     }
     td textarea {
       min-height: 32px;
       max-height: 120px;
     }
     .add-row-btn {
-      background: #e3f2fd;
-      color: #1976d2;
-      border: 1px solid #90caf9;
+      background: var(--btn-color);
+      color: var(--btn-bg);
+      border: 1px solid var(--border);
       border-radius: 5px;
       padding: 6px 14px;
       font-size: 0.97rem;
-      margin: 12px 0 12px 0;
+      margin: 0 0 0 12px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s;
+      font-weight: 500;
     }
     .add-row-btn:hover {
-      background: #bbdefb;
+      background: var(--btn-hover);
+      color: var(--btn-color);
     }
     .bottom-space {
       height: var(--bottom-space);
@@ -143,6 +169,7 @@
     @media (max-width: 800px) {
       .container { padding: 10px; }
       th, td { font-size: 0.95rem; padding: 7px 4px; }
+      .sector-table { min-width: 220px; }
     }
   </style>
 </head>
@@ -246,8 +273,6 @@ function renderSectors() {
     colHeaders.forEach((col, i) => {
       const th = document.createElement('th');
       th.innerText = col;
-      // Allow resizing row height by dragging
-      th.style.userSelect = 'none';
       tr.appendChild(th);
     });
     thead.appendChild(tr);
@@ -358,6 +383,20 @@ renderSectors();
 </script>
 </body>
 </html>
+
+
+  
+
+    
+ 
+
+ 
+
+  
+     
+          
+
+
 
    
     
