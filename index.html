@@ -11,22 +11,48 @@
       --card-bg: #f3c846;
       --accent: #222326;
       --border: #bfa431;
-      --radius: 14px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.07);
-      --row-hover: #fffbe9;
-      --header-bg: #222326;
-      --header-color: #f3c846;
-      --th-bg: #ffe37b;
-      --th-color: #222326;
-      --btn-bg: #222326;
-      --btn-color: #f3c846;
     }
-    /* [Keep all other CSS styles unchanged] */
+    body {
+      background: var(--main-bg);
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      border: 2px solid var(--border);
+    }
+    .toolbar {
+      margin-bottom: 15px;
+      text-align: right;
+    }
+    .toolbar button {
+      background: var(--accent);
+      color: var(--card-bg);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .priority-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .priority-pill.high { background: #e53935; color: white; }
+    .priority-pill.medium { background: #f3c846; color: #222326; }
+    .priority-pill.low { background: #44474b; color: white; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Client Acquisition Tracking Worksheet</h1>
     <div class="toolbar">
       <button onclick="addRow()">+ Add Row</button>
       <button onclick="addSector()">+ Add Sector</button>
@@ -34,105 +60,103 @@
     </div>
     <div id="hot"></div>
   </div>
+
 <script>
-// Initialize Handsontable instance
-let hot;
+// Initialize configuration
+let sectors = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
+let statuses = ['Not Contacted', 'Contacted', 'Follow-up Required', 'Interested', 'Not Interested'];
+let priorities = ['High', 'Medium', 'Low'];
 
-// Data and configuration
-const initialData = [
-  ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', '', 'Not Contacted', '', '', 'High', '', ''],
-  // [Rest of your initial data rows]
-];
-
-const priorityOptions = ['High', 'Medium', 'Low'];
-let sectorOptions = ['FOOD/ICECREAMS', 'JEWELLERS', 'APPAREL'];
-let statusOptions = ['Not Contacted', 'Contacted', 'Follow-up Required', 'Interested', 'Not Interested'];
-
-document.addEventListener('DOMContentLoaded', function() {
-  hot = new Handsontable(document.getElementById('hot'), {
-    data: initialData,
-    columns: [
-      { data: 0, title: 'Client Name' },
-      { 
-        data: 1, 
-        title: 'Sector', 
-        type: 'dropdown', 
-        source: sectorOptions,
-        strict: true,
-        allowInvalid: false
-      },
-      { data: 2, title: 'Contact Person' },
-      { data: 3, title: 'Phone' },
-      { data: 4, title: 'Email' },
-      { 
-        data: 5, 
-        title: 'Status', 
-        type: 'dropdown', 
-        source: statusOptions,
-        strict: true,
-        allowInvalid: false
-      },
-      { data: 6, title: 'Last Contact', type: 'date' },
-      { data: 7, title: 'Next Follow Up', type: 'date' },
-      { 
-        data: 8, 
-        title: 'Priority',
-        type: 'dropdown',
-        source: priorityOptions,
-        strict: true,
-        allowInvalid: false
-      },
-      { data: 9, title: 'Address' },
-      { data: 10, title: 'Notes' }
-    ],
-    colHeaders: true,
-    manualColumnResize: true,
-    height: 600,
-    licenseKey: 'non-commercial-and-evaluation'
-  });
+// Initialize Handsontable
+const container = document.getElementById('hot');
+const hot = new Handsontable(container, {
+  data: [
+    ['Good Flipping Burgers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', ''],
+    ['Serial Grillers', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'Medium', '', ''],
+    ['GO zero ice creams', 'FOOD/ICECREAMS', '', '', 'Not Contacted', '', 'High', '', ''],
+    ['Jet Gems', 'JEWELLERS', '', '', 'Not Contacted', '', 'Medium', '', ''],
+    ['Zen Diamonds', 'JEWELLERS', '', '', 'Not Contacted', '', 'High', '', '']
+  ],
+  colHeaders: ['Client Name', 'Sector', 'Contact Person', 'Phone', 'Status', 'Last Contact', 'Priority', 'Next Follow-up', 'Notes'],
+  columns: [
+    { type: 'text' },
+    { type: 'dropdown', source: sectors },
+    { type: 'text' },
+    { type: 'text' },
+    { type: 'dropdown', source: statuses },
+    { type: 'date', dateFormat: 'YYYY-MM-DD' },
+    { 
+      type: 'dropdown',
+      source: priorities,
+      renderer: function(instance, td, row, col, prop, value) {
+        Handsontable.renderers.DropdownRenderer.apply(this, arguments);
+        td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
+      }
+    },
+    { type: 'date', dateFormat: 'YYYY-MM-DD' },
+    { type: 'text' }
+  ],
+  height: 600,
+  licenseKey: 'non-commercial-and-evaluation',
+  manualColumnResize: true,
+  manualRowResize: true,
+  contextMenu: true
 });
 
-// Fixed button functions
+// Core functionality
 function addRow() {
   hot.alter('insert_row', hot.countRows());
 }
 
 function addSector() {
-  const sector = prompt("Enter new sector:");
-  if (sector && !sectorOptions.includes(sector)) {
-    sectorOptions.push(sector);
+  const sector = prompt('Enter new sector:');
+  if (sector && !sectors.includes(sector)) {
+    sectors.push(sector);
     hot.updateSettings({
       columns: [
-        { data: 0 },
+        { type: 'text' },
+        { type: 'dropdown', source: sectors },
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'dropdown', source: statuses },
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
         { 
-          data: 1, 
-          type: 'dropdown', 
-          source: sectorOptions,
-          strict: true,
-          allowInvalid: false
+          type: 'dropdown',
+          source: priorities,
+          renderer: function(instance, td, row, col, prop, value) {
+            Handsontable.renderers.DropdownRenderer.apply(this, arguments);
+            td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
+          }
         },
-        // [Keep other column definitions]
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
+        { type: 'text' }
       ]
     });
   }
 }
 
 function addStatus() {
-  const status = prompt("Enter new status:");
-  if (status && !statusOptions.includes(status)) {
-    statusOptions.push(status);
+  const status = prompt('Enter new status:');
+  if (status && !statuses.includes(status)) {
+    statuses.push(status);
     hot.updateSettings({
       columns: [
-        { data: 0 },
-        { data: 1 },
-        // ...other columns
+        { type: 'text' },
+        { type: 'dropdown', source: sectors },
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'dropdown', source: statuses },
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
         { 
-          data: 5, 
-          type: 'dropdown', 
-          source: statusOptions,
-          strict: true,
-          allowInvalid: false
-        }
+          type: 'dropdown',
+          source: priorities,
+          renderer: function(instance, td, row, col, prop, value) {
+            Handsontable.renderers.DropdownRenderer.apply(this, arguments);
+            td.innerHTML = value ? `<div class="priority-pill ${value.toLowerCase()}">${value}</div>` : '';
+          }
+        },
+        { type: 'date', dateFormat: 'YYYY-MM-DD' },
+        { type: 'text' }
       ]
     });
   }
@@ -140,6 +164,7 @@ function addStatus() {
 </script>
 </body>
 </html>
+
 
 
 
