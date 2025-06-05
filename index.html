@@ -9,11 +9,12 @@
         /* CRED-inspired Styling */
         :root {
             --bg-dark: #121212; /* Dark background */
-            --text-light: #fff; /* Light text for contrast */
+            --text-light: #E0E0E0; /* Light text for contrast - slightly dimmed for less harshness */
             --accent-color: #00FF96; /* Vibrant accent like CRED */
             --table-bg: #1E1E1E; /* Darker table background */
             --table-header-bg: #2C2C2C; /* Slightly lighter header */
             --row-hover: rgba(0, 255, 150, 0.1); /* Subtle hover effect */
+            --text-dark-for-table: #333333; /* Darker text for table cells for visibility */
         }
 
         body {
@@ -27,7 +28,7 @@
         .container {
             max-width: 1200px;
             margin: 20px auto;
-            background-color: var(--table-bg);
+            background-color: var(--table-bg); /* Container background to match table for seamless look */
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -38,6 +39,7 @@
             text-align: center;
             margin-bottom: 30px;
             font-weight: 500;
+            padding-top: 20px; /* Added padding so title isn't at very top of container */
         }
 
         .toolbar {
@@ -57,6 +59,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            font-weight: 500;
         }
 
         .toolbar button:hover {
@@ -65,24 +68,35 @@
 
         /* Handsontable Styling */
         .handsontable {
-            background-color: var(--table-bg) !important;
-            color: var(--text-light) !important;
-            border-radius: 12px;
+            background-color: var(--table-bg) !important; /* Ensuring table itself uses dark bg */
+            color: var(--text-dark-for-table) !important; /* Changed general table text to dark */
+            border-radius: 0 0 12px 12px; /* Rounded bottom corners as top is covered by toolbar/title */
             overflow: hidden;
         }
 
         .handsontable th {
             background-color: var(--table-header-bg) !important;
-            color: var(--text-light) !important;
+            color: var(--text-light) !important; /* Header text remains light for contrast with dark header bg */
             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            font-weight: 500;
         }
 
         .handsontable td {
             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: var(--text-dark-for-table) !important; /* Darker text color for better visibility on light cell background */
+            background-color: #ffffff !important; /* Making cell background light for dark text */
         }
 
         .handsontable tr:hover td {
-            background-color: var(--row-hover) !important;
+            background-color: #f0f0f0 !important; /* Lighter hover for light cells */
+        }
+
+        /* Ensure dropdown editors also have readable text */
+        .handsontable .htDropdownMenu td {
+             color: #333333 !important; /* Dark text for dropdown menu items */
+        }
+        .handsontable .htAutocompleteArrow {
+            color: var(--text-dark-for-table) !important; /* Ensure dropdown arrow is visible */
         }
     </style>
 </head>
@@ -152,7 +166,7 @@
             autoColumnSize: true,
             autoRowSize: true,
             contextMenu: true,
-            className: "htCenter", 
+            className: "htCenter",
             manualColumnResize: true,
             manualRowResize: true
         });
@@ -168,19 +182,12 @@
             if (newStatus && statusOptions.indexOf(newStatus) === -1) {
                 statusOptions.push(newStatus);
                 hot.updateSettings({
-                    columns: [
-                        { data: 0, type: 'text' },
-                        { data: 1, type: 'dropdown', source: sectorOptions },
-                        { data: 2, type: 'text' },
-                        { data: 3, type: 'text' },
-                        { data: 4, type: 'dropdown', source: statusOptions },
-                        { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                        { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                        { data: 7, type: 'dropdown', source: priorityOptions },
-                        { data: 8, type: 'text' },
-                        { data: 9, type: 'text' },
-                        { data: 10, type: 'text' }
-                    ]
+                    columns: hot.getSettings().columns.map((col, index) => {
+                        if (index === 4) { // Status column index
+                            return { ...col, source: statusOptions };
+                        }
+                        return col;
+                    })
                 });
             }
         }
@@ -191,19 +198,12 @@
             if (newSector && sectorOptions.indexOf(newSector) === -1) {
                 sectorOptions.push(newSector);
                 hot.updateSettings({
-                    columns: [
-                        { data: 0, type: 'text' },
-                        { data: 1, type: 'dropdown', source: sectorOptions },
-                        { data: 2, type: 'text' },
-                        { data: 3, type: 'text' },
-                        { data: 4, type: 'dropdown', source: statusOptions },
-                        { data: 5, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                        { data: 6, type: 'date', dateFormat: 'YYYY-MM-DD' },
-                        { data: 7, type: 'dropdown', source: priorityOptions },
-                        { data: 8, type: 'text' },
-                        { data: 9, type: 'text' },
-                        { data: 10, type: 'text' }
-                    ]
+                     columns: hot.getSettings().columns.map((col, index) => {
+                        if (index === 1) { // Sector column index
+                            return { ...col, source: sectorOptions };
+                        }
+                        return col;
+                    })
                 });
             }
         }
